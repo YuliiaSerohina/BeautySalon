@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'salon.apps.SalonConfig',
     'panel.apps.PanelConfig',
-    'user.apps.UserConfig'
+    'user.apps.UserConfig',
+    'phonenumber_field'
 ]
 
 MIDDLEWARE = [
