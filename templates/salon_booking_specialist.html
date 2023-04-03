@@ -108,6 +108,35 @@ text-align: left;
 float: none;
 }
 }
+.button {
+  background-color: #CBC3E3;
+  border: none;
+  color: black;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 16px;
+}
+
+.button:hover {
+  background-color: #B19CD9;
+}
+.box {
+  background-color: white;
+  border: solid #CBC3E3;
+  color: black;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 16px;
+}
+
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -117,7 +146,7 @@ float: none;
 </head>
 <body>
 <div class="header">
-<a href="" class="logo">Beauty salon</a>
+<a href="/" class="logo">Beauty salon</a>
 <div class="header-right">
 <a class="active" href="/salon/services/">Services</a>
     <a class="active" href="/salon/specialist/">Specialist</a>
@@ -125,8 +154,32 @@ float: none;
 </div>
 </div>
 
-<h1>Welcome to salon</h1>
-<form>
+<form action="/salon/booking/specialist/" method="post">{% csrf_token %}
+    <div>
+        <h2>Booking specialist id - {{ specialist_id }}</h2>
+        <label for="specialist_id">Specialist id </label>
+        <input type="text" name="specialist_id" id="specialist_id" value="{{ specialist_id }}" class="box">
+        <label for="name">Service</label>
+        <select id="name" name="name">
+            {% for service in specialist_services %}
+            <option value="{{ service.id}}">{{ service.name }}</option>
+
+            {% endfor %}
+</select>
+        <label for="date">Date </label>
+  <input type="date" class="box" id="date" name="date">
+        <label for="time">Time </label>
+  <input type="time" class="box" id="time" name="time">
+        <input type="submit" class="button" value="Booking">
+    </div>
+    <div>
+        <h3>Schedule</h3>
+        {% for one_specialist in schedule_specialist %}
+        <br>
+        {{ one_specialist.specialist.name }} {{ one_specialist.date }} {{ one_specialist.time_start }} {{ one_specialist.time_finish }}
+        {% endfor %}
+
+    </div>
     <div class="footer-basic">
         <footer>
             <div class="social"><a href="#"><i class="icon ion-social-instagram"></i></a>

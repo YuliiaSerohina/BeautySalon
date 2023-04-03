@@ -108,6 +108,35 @@ text-align: left;
 float: none;
 }
 }
+.button {
+  background-color: #CBC3E3;
+  border: none;
+  color: black;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 16px;
+}
+
+.button:hover {
+  background-color: #B19CD9;
+}
+.box {
+  background-color: white;
+  border: solid #CBC3E3;
+  color: black;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 16px;
+}
+
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -117,7 +146,7 @@ float: none;
 </head>
 <body>
 <div class="header">
-<a href="" class="logo">Beauty salon</a>
+<a href="/" class="logo">Beauty salon</a>
 <div class="header-right">
 <a class="active" href="/salon/services/">Services</a>
     <a class="active" href="/salon/specialist/">Specialist</a>
@@ -125,8 +154,25 @@ float: none;
 </div>
 </div>
 
-<h1>Welcome to salon</h1>
-<form>
+<form action="/panel/services/" method="post">{% csrf_token %}
+    <div>
+        <h2>Add new service</h2>
+        <label for="name">Service name</label>
+  <input type="text" class="box" id="name" name="name">
+        <label for="time">Takes time </label>
+  <input type="number" class="box" id="time" name="time">
+        <label for="price">Price </label>
+  <input type="number" class="box" id="price" name="price">
+        <input type="submit" class="button" value="Add new service">
+    </div>
+    <div>
+        <p>All services</p>
+        {% for service in services %}
+        <br>
+        {{service}}
+        {% endfor %}
+
+    </div>
     <div class="footer-basic">
         <footer>
             <div class="social"><a href="#"><i class="icon ion-social-instagram"></i></a>
