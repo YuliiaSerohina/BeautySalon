@@ -108,6 +108,35 @@ text-align: left;
 float: none;
 }
 }
+.button {
+  background-color: #CBC3E3;
+  border: none;
+  color: black;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 16px;
+}
+
+.button:hover {
+  background-color: #B19CD9;
+}
+.box {
+  background-color: white;
+  border: solid #CBC3E3;
+  color: black;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 16px;
+}
+
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -117,23 +146,40 @@ float: none;
 </head>
 <body>
 <div class="header">
-<a href="" class="logo">Beauty salon</a>
+<a href="/" class="logo">Beauty salon</a>
 <div class="header-right">
 <a class="active" href="/salon/services/">Services</a>
-    <a class="active" href="/salon/specialist/">Specialist</a>
 
 </div>
 </div>
 
-<h1>Welcome to salon</h1>
-<form>
+<form action="/panel/specialist/{{specialist_id}}/" method="post">{% csrf_token %}
+    <div>
+        <h1>Specialist id {{ specialist_id}}</h1>
+        <h2>Add new schedule</h2>
+
+        <label for="date">Date </label>
+  <input type="date" class="box" id="date" name="date">
+        <label for="time_start">Time start</label>
+  <input type="number" class="box" id="time_start" name="time_start">
+        <label for="time_finish">Time finish</label>
+  <input type="number" class="box" id="time_finish" name="time_finish">
+        <input type="submit" class="button" value="Add new schedule">
+    </div>
+    <div>
+        <p>All work days specialist</p>
+        {% for one_record in schedule %}
+        <br>
+         {{one_record.date}}  {{one_record.time_start}} {{ one_record.time_finish}}
+        {% endfor %}
+
+    </div>
     <div class="footer-basic">
         <footer>
             <div class="social"><a href="#"><i class="icon ion-social-instagram"></i></a>
                 <a href="#"><i class="icon ion-social-facebook"></i></a></div>
             <ul class="list-inline">
                 <li class="list-inline-item"><a href="/salon/services/">Services</a></li>
-                <li class="list-inline-item"><a href="/salon/specialist/">Specialist</a></li>
             </ul>
             <p class="copyright">Ju © 2023</p>
 

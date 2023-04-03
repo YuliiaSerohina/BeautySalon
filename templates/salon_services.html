@@ -2,9 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <style>
-        .footer-basic {
+    <title>Services</title>
+     <style>
+         td, th {
+    border: 1px solid #777;
+    padding: 0.5rem;
+    text-align: center;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+tbody tr:nth-child(odd) {
+    background: #eee;
+}
+caption {
+    font-size: 0.8rem;
+}
+ .footer-basic {
   padding:40px 0;
   background-color:#ffffff;
   color:#4b4c4d;
@@ -108,26 +124,61 @@ text-align: left;
 float: none;
 }
 }
-    </style>
+a{
+color: black;
+text-decoration: none;
+}
+a:hover{
+color: black;
+text-decoration: none;
+}
+a:visited{
+color: black;
+text-decoration: none;
+}
+a:active{
+text-decoration: none;
+}
+</style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
+
 </head>
 <body>
 <div class="header">
-<a href="" class="logo">Beauty salon</a>
+<a href="/" class="logo">Beauty salon</a>
 <div class="header-right">
 <a class="active" href="/salon/services/">Services</a>
     <a class="active" href="/salon/specialist/">Specialist</a>
 
 </div>
 </div>
+<h1>Services available this week</h1>
+<form action="/salon/services/" method="get">
 
-<h1>Welcome to salon</h1>
-<form>
-    <div class="footer-basic">
+    <div>
+          <table style="width:60%">
+        <tr>
+            <th>Service</th>
+            <th>Takes time</th>
+            <th>Price</th>
+        </tr>
+
+        {% for service in unique_services_dict %}
+
+        <tr>
+        <td><a href="/salon/services/{{ service.id }}">{{ service.name }}</a></td>
+            <td>{{ service.time }}</td>
+            <td>{{ service.price }}</td>
+
+        </tr>
+{% endfor -%}
+          </table>>
+    </div>
+     <div class="footer-basic">
         <footer>
             <div class="social"><a href="#"><i class="icon ion-social-instagram"></i></a>
                 <a href="#"><i class="icon ion-social-facebook"></i></a></div>
@@ -140,5 +191,6 @@ float: none;
         </footer>
     </div>
 </form>
-</body>
 
+</body>
+</html>

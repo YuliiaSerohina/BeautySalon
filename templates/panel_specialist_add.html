@@ -108,6 +108,50 @@ text-align: left;
 float: none;
 }
 }
+.button {
+  background-color: #CBC3E3;
+  border: none;
+  color: black;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 16px;
+}
+
+.button:hover {
+  background-color: #B19CD9;
+}
+.box {
+  background-color: white;
+  border: solid #CBC3E3;
+  color: black;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 16px;
+}
+a{
+color: black;
+text-decoration: none;
+}
+a:hover{
+color: black;
+text-decoration: none;
+}
+a:visited{
+color: black;
+text-decoration: none;
+}
+a:active{
+text-decoration: none;
+}
+
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -117,7 +161,7 @@ float: none;
 </head>
 <body>
 <div class="header">
-<a href="" class="logo">Beauty salon</a>
+<a href="/" class="logo">Beauty salon</a>
 <div class="header-right">
 <a class="active" href="/salon/services/">Services</a>
     <a class="active" href="/salon/specialist/">Specialist</a>
@@ -125,8 +169,37 @@ float: none;
 </div>
 </div>
 
-<h1>Welcome to salon</h1>
-<form>
+<form action="/panel/specialist/" method="post">{% csrf_token %}
+    <div>
+        <h2>Add new specialist</h2>
+        <label for="name">Name</label>
+  <input type="text" class="box" id="name" name="name">
+        <label for="phone">Phone</label>
+        <input type="text" class="box" id="phone" name="phone">
+        <label for="level">Level</label>
+        <input type="number" id="level" name="level" min="1" max="3"><br>
+        {% for service in services %}
+        <input type="checkbox" class="box" name="service_{{ service.id }}" value="{{ service.id }}" id="{{service.id}}">
+        <label for="{{service.id}}"> {{ service.name}}</label>
+        {% endfor %}
+
+
+        <input type="submit" class="button" value="Add new specialist">
+    </div>
+    <div>
+        <br>
+        <br>
+        <h3>All specialist</h3>
+
+        {% for specialist in all_specialist %}
+        <br>
+        <a href="/panel/specialist/{{ specialist.id }}"> {{ specialist.name }} {{ specialist.level }} {{ specialist.phone}}
+        {% for service in specialist.services.all %}
+            {{ service.name }}
+        {% endfor %}
+        {% endfor %}</a>
+
+    </div>
     <div class="footer-basic">
         <footer>
             <div class="social"><a href="#"><i class="icon ion-social-instagram"></i></a>

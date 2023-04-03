@@ -108,6 +108,50 @@ text-align: left;
 float: none;
 }
 }
+.button {
+  background-color: #CBC3E3;
+  border: none;
+  color: black;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 16px;
+}
+
+.button:hover {
+  background-color: #B19CD9;
+}
+.box {
+  background-color: white;
+  border: solid #CBC3E3;
+  color: black;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 16px;
+}
+a{
+color: black;
+text-decoration: none;
+}
+a:hover{
+color: black;
+text-decoration: none;
+}
+a:visited{
+color: black;
+text-decoration: none;
+}
+a:active{
+text-decoration: none;
+}
+
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -117,7 +161,7 @@ float: none;
 </head>
 <body>
 <div class="header">
-<a href="" class="logo">Beauty salon</a>
+<a href="/" class="logo">Beauty salon</a>
 <div class="header-right">
 <a class="active" href="/salon/services/">Services</a>
     <a class="active" href="/salon/specialist/">Specialist</a>
@@ -125,8 +169,20 @@ float: none;
 </div>
 </div>
 
-<h1>Welcome to salon</h1>
-<form>
+<form action="/panel/specialist/" method="post">{% csrf_token %}
+    <div>
+        <h2>specialists working this week</h2>
+    </div>
+    <div>
+        {% for specialist in unique_specialist_list %}
+        <br>
+        <a href="/salon/specialist/{{ specialist.specialist.id }}"> {{ specialist.specialist.name }}  Level-{{ specialist.specialist.level }}
+        {% for service in specialist.specialist.services.all %}
+            {{ service.name }},
+        {% endfor %}
+        {% endfor %}</a>
+
+    </div>
     <div class="footer-basic">
         <footer>
             <div class="social"><a href="#"><i class="icon ion-social-instagram"></i></a>
