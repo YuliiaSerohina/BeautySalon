@@ -5,6 +5,8 @@ from salon.models import Services as ServicesModel
 from salon.models import Specialist as SpecialistModel
 from salon.models import ScheduleSpecialist as ScheduleSpecialistModel
 from salon.models import Booking as BookingModel
+from salon.period_calculation import calc_free_time_for_service
+import numpy
 
 
 def salon(request):
@@ -58,15 +60,29 @@ def specialist_handler(request):
 
 def specialist_id_handler(request, specialist_id):
     specialist_services = SpecialistModel.objects.get(id=specialist_id).services.all()
+    specialist = SpecialistModel.objects.get(id=specialist_id)
     schedule_specialist = ScheduleSpecialistModel.objects.filter(
         date__gte=datetime.date.today(),
         date__lte=datetime.date.today() + datetime.timedelta(days=7),
         specialist_id=specialist_id
     )
-
+    all_services_date_time = []
+    for one_service in specialist_services:
+        for one_day in schedule_specialist:
+            count_free_time = calc_free_time_for_service(
+                specialist_id,
+                one_day.date,
+                one_day.time_start,
+                one_day.time_finish,
+                one_service
+            )
+            count_free_time_only_time = [date_time.time() for date_time in count_free_time]
+            one_day_service = {one_service.name: {one_day.date: sorted(count_free_time_only_time)}}
+            all_services_date_time.append(one_day_service)
     return render(request, 'salon_booking_specialist.html', {'specialist_services': specialist_services,
-                                                             'schedule_specialist': schedule_specialist,
-                                                             'specialist_id': specialist_id})
+                                                             'specialist_id': specialist_id,
+                                                             'all_services_date_time': all_services_date_time,
+                                                             'specialist': specialist})
 
 
 def booking_from_service(request):
@@ -85,11 +101,11 @@ def booking_from_service(request):
         return render(request, 'salon_booking_message.html', {'booking': booking})
 
 
-def booking_from_specialist(request):
+def booking_from_specialist(request): #беда с временем
     if request.method == 'POST':
         booking = BookingModel(
             specialist=SpecialistModel.objects.get(id=request.POST['specialist_id']),
-            service=ServicesModel.objects.get(id=request.POST['name']),
+            service=ServicesModel.objects.get(name=request.POST['name']),
             client=1,
             date=request.POST['date'],
             time_start=request.POST['time']
