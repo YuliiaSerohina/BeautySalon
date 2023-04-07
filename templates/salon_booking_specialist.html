@@ -156,27 +156,31 @@ float: none;
 
 <form action="/salon/booking/specialist/" method="post">{% csrf_token %}
     <div>
-        <h2>Booking specialist id - {{ specialist_id }}</h2>
-        <label for="specialist_id">Specialist id </label>
-        <input type="text" name="specialist_id" id="specialist_id" value="{{ specialist_id }}" class="box">
-        <label for="name">Service</label>
-        <select id="name" name="name">
-            {% for service in specialist_services %}
-            <option value="{{ service.id}}">{{ service.name }}</option>
+        <h2>Booking specialist {{ specialist.name}}</h2>
 
-            {% endfor %}
-</select>
-        <label for="date">Date </label>
-  <input type="date" class="box" id="date" name="date">
-        <label for="time">Time </label>
-  <input type="time" class="box" id="time" name="time">
-        <input type="submit" class="button" value="Booking">
-    </div>
-    <div>
-        <h3>Schedule</h3>
-        {% for one_specialist in schedule_specialist %}
+        <input type="hidden" name="specialist_id" id="specialist_id" value="{{ specialist_id }}" class="box">
+
+        {% for one_record in all_services_date_time %}
+        {% for key in one_record %}
+        {% for date_time in one_record.values %}
+        {% for date in date_time.keys %}
+        {% for time_n in date_time.values %}
+
         <br>
-        {{ one_specialist.specialist.name }} {{ one_specialist.date }} {{ one_specialist.time_start }} {{ one_specialist.time_finish }}
+        <input type="text" name="name" value="{{ key }}" class="box">
+        <input type="text" name="date" value="{{ date|date:'Y-m-d' }}" class="box">
+         <label for="time">Choose the time:</label>
+         <select id="time" name="time" class="box">
+             {% for time in time_n %}
+        <option value="{{ time }}">{{ time }}</option>
+             {% endfor %}
+            </select>
+
+         <input type="submit" class="button" value="Booking">
+        {% endfor %}
+        {% endfor %}
+        {% endfor %}
+        {% endfor %}
         {% endfor %}
 
     </div>
