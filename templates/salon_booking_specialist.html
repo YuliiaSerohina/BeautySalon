@@ -167,16 +167,21 @@ float: none;
         {% for time_n in date_time.values %}
 
         <br>
-        <input type="text" name="name" value="{{ key }}" class="box">
-        <input type="text" name="date" value="{{ date|date:'Y-m-d' }}" class="box">
-         <label for="time">Choose the time:</label>
-         <select id="time" name="time" class="box">
-             {% for time in time_n %}
-        <option value="{{ time }}">{{ time }}</option>
-             {% endfor %}
-            </select>
+          <input type="radio" id="name" name="name" value="{{ key }}">
+  <label for="name"> {{ key }} </label>
 
-         <input type="submit" class="button" value="Booking">
+        <input type="radio" id="date" name="date" value="{{ date|date:'Y-m-d' }}">
+  <label for="date">{{ date|date:'Y-m-d' }} </label><br>
+
+
+             {% for time in time_n %}
+               <input type="radio" id="time" name="time" value="{{ time|time:'H:i' }}">
+  <label for="time">{{ time|time:'H:i' }} </label>
+
+             {% endfor %}
+
+
+         <input type="submit" class="button" value="Booking"><br>
         {% endfor %}
         {% endfor %}
         {% endfor %}

@@ -5,7 +5,7 @@ from salon.models import Services as ServicesModel
 from salon.models import Specialist as SpecialistModel
 from salon.models import ScheduleSpecialist as ScheduleSpecialistModel
 from salon.models import Booking as BookingModel
-from salon.period_calculation import calc_free_time_for_service
+from salon.period_calculation import calc_free_time_for_service, calc_free_time_for_specialist
 import numpy
 
 
@@ -30,18 +30,26 @@ def services_handler(request):
 def service_id_handler(request, service_id):
     specialists_working_this_week = ScheduleSpecialistModel.objects.filter(
         date__gte=datetime.date.today(), date__lte=datetime.date.today() + datetime.timedelta(days=7))
-    specialist_list = []
-    unique_specialist_list = []
+    specialist_making_service_this_week = []
+    free_time_all_specialist = []
     for specialist in specialists_working_this_week:
         specialist_services = SpecialistModel.objects.get(id=specialist.specialist_id).services.filter(id=service_id)
         if bool(specialist_services) is True:
-            specialist_list.append(specialist)
-    for unique_specialist in specialist_list:
-        if unique_specialist.specialist.name not in unique_specialist_list:
-            unique_specialist_list.append(unique_specialist.specialist.name)
-    return render(request, 'salon_booking_service.html', {'specialist_list': specialist_list,
-                                                    'unique_specialist_list': unique_specialist_list,
-                                                    'service_id': service_id})
+            specialist_making_service_this_week.append(specialist)
+    for one_specialist in specialist_making_service_this_week:
+        count_free_time = calc_free_time_for_service(
+            one_specialist.specialist_id,
+            one_specialist.date,
+            one_specialist.time_start,
+            one_specialist.time_finish,
+            service_id
+        )
+        count_free_time_only_time = [date_time.time() for date_time in count_free_time]
+        one_day_service = {one_specialist.specialist.name: {one_specialist.date: sorted(count_free_time_only_time)}}
+        free_time_all_specialist.append(one_day_service)
+
+    return render(request, 'salon_booking_service.html', {'service_id': service_id,
+                                                          'free_time_all_specialist': free_time_all_specialist})
 
 
 def specialist_handler(request):
@@ -69,7 +77,7 @@ def specialist_id_handler(request, specialist_id):
     all_services_date_time = []
     for one_service in specialist_services:
         for one_day in schedule_specialist:
-            count_free_time = calc_free_time_for_service(
+            count_free_time = calc_free_time_for_specialist(
                 specialist_id,
                 one_day.date,
                 one_day.time_start,
@@ -87,11 +95,8 @@ def specialist_id_handler(request, specialist_id):
 
 def booking_from_service(request):
     if request.method == 'POST':
-        specialist_query_set = SpecialistModel.objects.filter(name=request.POST['name'])
-        for id_specialist in specialist_query_set:
-            specialist_id = id_specialist.pk
         booking = BookingModel(
-            specialist=SpecialistModel.objects.get(id=specialist_id),
+            specialist=SpecialistModel.objects.get(name=request.POST['name']),
             service=ServicesModel.objects.get(id=request.POST['service_id']),
             client=1,
             date=request.POST['date'],
@@ -101,7 +106,7 @@ def booking_from_service(request):
         return render(request, 'salon_booking_message.html', {'booking': booking})
 
 
-def booking_from_specialist(request): #беда с временем
+def booking_from_specialist(request):
     if request.method == 'POST':
         booking = BookingModel(
             specialist=SpecialistModel.objects.get(id=request.POST['specialist_id']),
