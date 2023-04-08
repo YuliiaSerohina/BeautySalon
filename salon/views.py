@@ -5,8 +5,7 @@ from salon.models import Services as ServicesModel
 from salon.models import Specialist as SpecialistModel
 from salon.models import ScheduleSpecialist as ScheduleSpecialistModel
 from salon.models import Booking as BookingModel
-from salon.period_calculation import calc_free_time_for_service, calc_free_time_for_specialist
-import numpy
+from salon.period_calculation import calc_free_time
 
 
 def salon(request):
@@ -32,17 +31,18 @@ def service_id_handler(request, service_id):
         date__gte=datetime.date.today(), date__lte=datetime.date.today() + datetime.timedelta(days=7))
     specialist_making_service_this_week = []
     free_time_all_specialist = []
+    service = ServicesModel.objects.get(id=service_id)
     for specialist in specialists_working_this_week:
         specialist_services = SpecialistModel.objects.get(id=specialist.specialist_id).services.filter(id=service_id)
         if bool(specialist_services) is True:
             specialist_making_service_this_week.append(specialist)
     for one_specialist in specialist_making_service_this_week:
-        count_free_time = calc_free_time_for_service(
+        count_free_time = calc_free_time(
             one_specialist.specialist_id,
             one_specialist.date,
             one_specialist.time_start,
             one_specialist.time_finish,
-            service_id
+            service
         )
         count_free_time_only_time = [date_time.time() for date_time in count_free_time]
         one_day_service = {one_specialist.specialist.name: {one_specialist.date: sorted(count_free_time_only_time)}}
@@ -77,7 +77,7 @@ def specialist_id_handler(request, specialist_id):
     all_services_date_time = []
     for one_service in specialist_services:
         for one_day in schedule_specialist:
-            count_free_time = calc_free_time_for_specialist(
+            count_free_time = calc_free_time(
                 specialist_id,
                 one_day.date,
                 one_day.time_start,

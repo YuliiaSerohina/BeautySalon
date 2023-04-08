@@ -3,7 +3,6 @@ from django.http import HttpResponse
 from salon.models import Services, Specialist, ScheduleSpecialist
 
 
-
 def bookings_handler(request):
     return HttpResponse('All bookings')
 
