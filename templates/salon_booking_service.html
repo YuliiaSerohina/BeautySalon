@@ -157,27 +157,39 @@ float: none;
 <form action="/salon/booking/service/" method="post">{% csrf_token %}
     <div>
         <h2>Booking {{service_id}}</h2>
-        <label for="name">Specialist</label>
-        <select id="name" name="name">
-            {% for one_specialist in unique_specialist_list %}
-            <option value="{{ one_specialist}}">{{ one_specialist }}</option>
+        <input type="hidden" name="service_id" value="{{ service_id }}">
 
-            {% endfor %}
-</select>
-        <label for="date">Date </label>
-  <input type="date" class="box" id="date" name="date">
-        <label for="time">Time </label>
-  <input type="time" class="box" id="time" name="time">
-        <label for="service_id">Service id </label>
-        <input type="text" name="service_id" id="service_id" value="{{ service_id }}" class="box">
-        <input type="submit" class="button" value="Booking">
+         {% for one_record in free_time_all_specialist %}
+        {% for name in one_record %}
+        {% for date_time in one_record.values %}
+        {% for date in date_time.keys %}
+        {% for time_n in date_time.values %}
+        <br>
+        <input type="radio" id="name" name="name" value="{{ name }}">
+  <label for="name"> {{ name }} </label>
+        <input type="radio" id="date" name="date" value="{{ date|date:'Y-m-d' }}">
+  <label for="date">{{ date|date:'Y-m-d' }} </label><br>
+
+
+             {% for time in time_n %}
+        <input type="radio" id="time" name="time" value="{{ time|time:'H:i' }}">
+  <label for="time">{{ time|time:'H:i' }} </label>
+             {% endfor %}
+
+
+         <input type="submit" class="button" value="Booking"><br>
+        
+
+        {% endfor %}
+        {% endfor %}
+        {% endfor %}
+        {% endfor %}
+         {% endfor %}
+
+
+
     </div>
     <div>
-        <h3>schedule</h3>
-        {% for one_specialist in specialist_list %}
-        <br>
-        {{ one_specialist.specialist.name }} {{ one_specialist.date }} {{ one_specialist.time_start }} {{ one_specialist.time_finish }}
-        {% endfor %}
 
     </div>
     <div class="footer-basic">
