@@ -1,7 +1,9 @@
 from django.test import TestCase
-from datetime import timedelta, datetime, date, time
+from django.test import Client
+from datetime import datetime, date, time
 from salon.period_calculation import convert_time_to_set
 from salon.period_calculation import calc_free_time_for_test
+from salon.models import Services, Specialist, Booking
 
 
 class TestPeriodCalculation(TestCase):
@@ -131,3 +133,45 @@ class TestPeriodCalculation(TestCase):
             datetime(2023, 4, 9, 11, 30)
         ]
         self.assertListEqual(result, expected_result)
+
+
+class TestBooking(TestCase):
+    def test_booking_from_service(self):
+        client = Client()
+        service = Services.objects.create(name='haircut', time=30, price=300)
+        specialist = Specialist.objects.create(name='Tamara', level=1, status=1, phone='+380676767670')
+        specialist.services.add(service)
+        specialist.save()
+        response = client.post('/salon/booking/service/',
+                               {
+                                   'name': 'Tamara',
+                                   'service_id': '1',
+                                   'date': '2023-04-11',
+                                   'time': '15:00'
+                               }
+                               )
+        self.assertEqual(response.status_code, 200)
+        booking = Booking.objects.get(specialist=specialist, service=service)
+        self.assertEqual(booking.date, date(2023, 4, 11))
+
+    def test_booking_from_specialist(self):
+        client = Client()
+        service = Services.objects.create(name='haircut', time=30, price=300)
+        specialist = Specialist.objects.create(name='Tamara', level=1, status=1, phone='+380676767670')
+        specialist.services.add(service)
+        specialist.save()
+        response = client.post('/salon/booking/specialist/',
+                               {
+                                   'specialist_id': '1',
+                                   'name': 'haircut',
+                                   'date': '2023-04-12',
+                                   'time': '15:00'
+                               }
+                               )
+        self.assertEqual(response.status_code, 200)
+        booking = Booking.objects.get(specialist=specialist, service=service)
+        self.assertEqual(booking.date, date(2023, 4, 12))
+
+
+
+
