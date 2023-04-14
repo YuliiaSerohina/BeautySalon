@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.shortcuts import redirect
 import datetime
 from salon.models import Services as ServicesModel
 from salon.models import Specialist as SpecialistModel
@@ -9,10 +10,12 @@ from salon.period_calculation import calc_free_time
 
 
 def salon(request):
-    return render(request, 'main_page.html')
+    username = request.user.username
+    return render(request, 'main_page.html', {'username': username})
 
 
 def services_handler(request):
+    username = request.user.username
     specialists_working_this_week = ScheduleSpecialistModel.objects.filter(
         date__gte=datetime.date.today(), date__lte=datetime.date.today() + datetime.timedelta(days=7))
     services_list = []
@@ -23,10 +26,12 @@ def services_handler(request):
         for one_service in service:
             if one_service not in unique_services_list:
                 unique_services_list.append(one_service)
-    return render(request, 'salon_services.html', {'unique_services_dict': unique_services_list})
+    return render(request, 'salon_services.html', {'unique_services_dict': unique_services_list,
+                                                   'username': username})
 
 
 def service_id_handler(request, service_id):
+    username = request.user.username
     specialists_working_this_week = ScheduleSpecialistModel.objects.filter(
         date__gte=datetime.date.today(), date__lte=datetime.date.today() + datetime.timedelta(days=7))
     specialist_making_service_this_week = []
@@ -49,10 +54,12 @@ def service_id_handler(request, service_id):
         free_time_all_specialist.append(one_day_service)
 
     return render(request, 'salon_booking_service.html', {'service_id': service_id,
-                                                          'free_time_all_specialist': free_time_all_specialist})
+                                                          'free_time_all_specialist': free_time_all_specialist,
+                                                          'username': username})
 
 
 def specialist_handler(request):
+    username = request.user.username
     specialists_working_this_week = ScheduleSpecialistModel.objects.filter(
         date__gte=datetime.date.today(), date__lte=datetime.date.today() + datetime.timedelta(days=7))
     specialist_list = []
@@ -63,10 +70,12 @@ def specialist_handler(request):
             unique_specialist_list.append(specialist)
     services = ServicesModel.objects.all()
     return render(request, 'salon_specialist.html', {'services': services,
-                                                     'unique_specialist_list': unique_specialist_list})
+                                                     'unique_specialist_list': unique_specialist_list,
+                                                     'username': username})
 
 
 def specialist_id_handler(request, specialist_id):
+    username = request.user.username
     specialist_services = SpecialistModel.objects.get(id=specialist_id).services.all()
     specialist = SpecialistModel.objects.get(id=specialist_id)
     schedule_specialist = ScheduleSpecialistModel.objects.filter(
@@ -90,35 +99,47 @@ def specialist_id_handler(request, specialist_id):
     return render(request, 'salon_booking_specialist.html', {'specialist_services': specialist_services,
                                                              'specialist_id': specialist_id,
                                                              'all_services_date_time': all_services_date_time,
-                                                             'specialist': specialist})
+                                                             'specialist': specialist, 'username': username})
 
 
 def booking_from_service(request):
-    if request.method == 'POST':
-        booking = BookingModel(
-            specialist=SpecialistModel.objects.get(name=request.POST['name']),
-            service=ServicesModel.objects.get(id=request.POST['service_id']),
-            client=1,
-            date=request.POST['date'],
-            time_start=request.POST['time']
-        )
-        booking.save()
-        return render(request, 'salon_booking_message.html', {'booking': booking})
+    username = request.user.username
+    user = request.user
+    if user.is_anonymous == False:
+        if request.method == 'POST':
+            booking = BookingModel(
+                specialist=SpecialistModel.objects.get(name=request.POST['name']),
+                service=ServicesModel.objects.get(id=request.POST['service_id']),
+                client=request.user.pk,
+                date=request.POST['date'],
+                time_start=request.POST['time']
+            )
+            booking.save()
+        return render(request, 'salon_booking_message.html', {'booking': booking, 'username': username})
+    else:
+        return redirect('/user/login/')
 
 
 def booking_from_specialist(request):
-    if request.method == 'POST':
-        booking = BookingModel(
-            specialist=SpecialistModel.objects.get(id=request.POST['specialist_id']),
-            service=ServicesModel.objects.get(name=request.POST['name']),
-            client=1,
-            date=request.POST['date'],
-            time_start=request.POST['time']
-        )
-        booking.save()
-        return render(request, 'salon_booking_message.html', {'booking': booking})
+    username = request.user.username
+    user = request.user
+    if user.is_anonymous == False:
+        if request.method == 'POST':
+            booking = BookingModel(
+                specialist=SpecialistModel.objects.get(id=request.POST['specialist_id']),
+                service=ServicesModel.objects.get(name=request.POST['name']),
+                client=user.pk,
+                date=request.POST['date'],
+                time_start=request.POST['time']
+            )
+            booking.save()
+        return render(request, 'salon_booking_message.html', {'booking': booking, 'username': username})
+    else:
+        return redirect('/user/login/')
 
 
 def booking_id_handler(request, booking_id):
     return HttpResponse(f'Booking info for id {booking_id}')
+
+
 

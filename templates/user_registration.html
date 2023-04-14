@@ -136,6 +136,21 @@ float: none;
   cursor: pointer;
   border-radius: 16px;
 }
+a{
+color: black;
+text-decoration: none;
+}
+a:hover{
+color: black;
+text-decoration: none;
+}
+a:visited{
+color: black;
+text-decoration: none;
+}
+a:active{
+text-decoration: none;
+}
 
     </style>
     <meta charset="utf-8">
@@ -148,51 +163,19 @@ float: none;
 <div class="header">
 <a href="/" class="logo">Beauty salon</a>
 <div class="header-right">
-<a class="active" href="/salon/services/">Services</a>
-    <a class="active" href="/salon/specialist/">Specialist</a>
-    <a class="active" href="/user/registration/">Registration</a>
-    <a class="active" href="/user/login/">Login</a>
-     <a class="active" href="/user/logout/">Exit</a>
-     <a class="active" href="/panel/specialist">Add Specialist</a>
-    <a class="active" href="/panel/services/">Add Service</a>
-    <p>Current user {{ username }}</p>
 
 </div>
 </div>
 
-<form action="/salon/booking/specialist/" method="post">{% csrf_token %}
+<form action="/user/registration/" method="post">{% csrf_token %}
     <div>
-        <h2>Booking specialist {{ specialist.name}}</h2>
-
-        <input type="hidden" name="specialist_id" id="specialist_id" value="{{ specialist_id }}" class="box">
-
-        {% for one_record in all_services_date_time %}
-        {% for key in one_record %}
-        {% for date_time in one_record.values %}
-        {% for date in date_time.keys %}
-        {% for time_n in date_time.values %}
-
-        <br>
-          <input type="radio" id="name" name="name" value="{{ key }}">
-  <label for="name"> {{ key }} </label>
-
-        <input type="radio" id="date" name="date" value="{{ date|date:'Y-m-d' }}">
-  <label for="date">{{ date|date:'Y-m-d' }} </label><br>
-
-
-             {% for time in time_n %}
-               <input type="radio" id="time" name="time" value="{{ time|time:'H:i' }}">
-  <label for="time">{{ time|time:'H:i' }} </label>
-
-             {% endfor %}
-
-
-         <input type="submit" class="button" value="Booking"><br>
-        {% endfor %}
-        {% endfor %}
-        {% endfor %}
-        {% endfor %}
-        {% endfor %}
+        <h2>Registration</h2>
+    </div>
+    <div>
+        <label>Name<input type="text" class="box" name="name" ></label><br>
+        <label>Email<input type="text" class="box" name="email" ></label><br>
+        <label>Password<input type="password" class="box" name="password" ></label><br>
+        <input type="submit" class="box" value="Registration">
 
     </div>
     <div class="footer-basic">
