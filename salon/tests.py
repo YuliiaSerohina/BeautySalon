@@ -136,41 +136,52 @@ class TestPeriodCalculation(TestCase):
 
 
 class TestBooking(TestCase):
-    def test_booking_from_service(self):
+    fixtures = ['fixture_base.json']
+
+    def setUp(self):
         client = Client()
-        service = Services.objects.create(name='haircut', time=30, price=300)
-        specialist = Specialist.objects.create(name='Tamara', level=1, status=1, phone='+380676767670')
-        specialist.services.add(service)
-        specialist.save()
-        response = client.post('/salon/booking/service/',
+
+    def test_booking_from_service(self):
+        self.client.login(username='Julia', password='123456')
+        specialist = Specialist.objects.filter(name='Katy')
+        for one_specialist in specialist:
+            specialist_idx = one_specialist.id
+        services_specialist = Specialist.objects.get(id=specialist_idx).services.filter(name='hair coloring')
+        for one_service in services_specialist:
+            service_idx = one_service.id
+        response = self.client.post('/salon/booking/service/',
                                {
-                                   'name': 'Tamara',
-                                   'service_id': '1',
-                                   'date': '2023-04-11',
+                                   'name': 'Katy',
+                                   'service_id': '3',
+                                   'client': '2',
+                                   'date': '2023-04-30',
                                    'time': '15:00'
                                }
                                )
         self.assertEqual(response.status_code, 200)
-        booking = Booking.objects.get(specialist=specialist, service=service)
-        self.assertEqual(booking.date, date(2023, 4, 11))
+        booking = Booking.objects.get(specialist=specialist_idx, service=service_idx)
+        self.assertEqual(booking.date, date(2023, 4, 30))
+        self.assertEqual(booking.service.id, 3)
+        self.assertEqual(booking.time_start, time(15, 0))
 
     def test_booking_from_specialist(self):
-        client = Client()
-        service = Services.objects.create(name='haircut', time=30, price=300)
-        specialist = Specialist.objects.create(name='Tamara', level=1, status=1, phone='+380676767670')
-        specialist.services.add(service)
-        specialist.save()
-        response = client.post('/salon/booking/specialist/',
-                               {
-                                   'specialist_id': '1',
-                                   'name': 'haircut',
-                                   'date': '2023-04-12',
-                                   'time': '15:00'
-                               }
-                               )
+        self.client.login(username='Julia', password='123456')
+        specialist = Specialist.objects.filter(name='Anna')
+        for one_specialist in specialist:
+            specialist_idx = one_specialist.id
+        services_specialist = Specialist.objects.get(id=specialist_idx).services.filter(name='hair coloring')
+        for one_service in services_specialist:
+            service_idx = one_service.id
+        response = self.client.post('/salon/booking/specialist/', {'specialist_id': '1',
+                                                                   'name': 'hair coloring',
+                                                                   'client': '2',
+                                                                   'date': '2023-04-30',
+                                                                   'time': '20:00:00'})
         self.assertEqual(response.status_code, 200)
-        booking = Booking.objects.get(specialist=specialist, service=service)
-        self.assertEqual(booking.date, date(2023, 4, 12))
+        booking = Booking.objects.get(specialist=specialist_idx, service=service_idx,
+                                      date='2023-04-30', time_start='20:00:00')
+        self.assertEqual(booking.date, date(2023, 4, 30))
+        self.assertEqual(booking.client, 2)
 
 
 
