@@ -197,7 +197,7 @@ text-decoration: none;
         <br>
         <h3>All specialist</h3>
 
-        {% for specialist in all_specialist %}
+        {% for specialist in page_obj %}
         <br>
         <a href="/panel/specialist/{{ specialist.id }}"> {{ specialist.name }} {{ specialist.level }} {{ specialist.phone}}
         {% for service in specialist.services.all %}
@@ -206,6 +206,24 @@ text-decoration: none;
         {% endfor %}</a>
 
     </div>
+    <br>
+    <br>
+    <div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+        {% endif %}
+
+        <span class="current">
+            {{ page_obj.number }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+
+        {% endif %}
+    </span>
+</div>
     <div class="footer-basic">
         <footer>
             <div class="social"><a href="#"><i class="icon ion-social-instagram"></i></a>

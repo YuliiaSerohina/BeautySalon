@@ -175,12 +175,30 @@ float: none;
     </div>
     <div>
         <p>All work days specialist</p>
-        {% for one_record in schedule %}
+        {% for one_record in page_obj %}
         <br>
          {{one_record.date}}  {{one_record.time_start}} {{ one_record.time_finish}}
         {% endfor %}
 
     </div>
+     <br>
+    <br>
+    <div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+        {% endif %}
+
+        <span class="current">
+            {{ page_obj.number }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+
+        {% endif %}
+    </span>
+</div>
     <div class="footer-basic">
         <footer>
             <div class="social"><a href="#"><i class="icon ion-social-instagram"></i></a>
